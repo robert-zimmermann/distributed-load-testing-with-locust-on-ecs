@@ -39,6 +39,7 @@ export class LocustWorkerService extends Construct {
       });
 
     const service = new ecs.FargateService(this, 'Service', {
+      desiredCount: 5, // set number of locust worker nodes
       cluster,
       taskDefinition: workerTaskDefinition,
       // You can adjust spot:on-demand ratio here

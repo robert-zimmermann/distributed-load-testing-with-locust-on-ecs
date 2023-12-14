@@ -6,6 +6,7 @@ import { AssetImage } from 'aws-cdk-lib/aws-ecs';
 import { BlockPublicAccess, Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { LocustMasterService } from './constructs/locust_master_service';
 import { LocustWorkerService } from './constructs/locust_worker_service';
+import { ServiceLinkedRole } from 'upsert-slr';
 
 interface LoadTestStackProps extends StackProps {
   readonly allowedCidrs: string[];
@@ -37,16 +38,21 @@ export class LoadTestStack extends Stack {
     // Add explicit dependency https://github.com/aws/aws-cdk/issues/18985
     vpc.node.findChild('FlowLogS3').node.findChild('FlowLog').node.addDependency(logBucket);
 
+    // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html
+    const slr = new ServiceLinkedRole(this, 'EcsSlr', {
+      awsServiceName: 'ecs.amazonaws.com',
+    });
+
     const cluster = new ecs.Cluster(this, 'Cluster', {
       vpc,
       defaultCloudMapNamespace: { name: 'locust' },
       containerInsights: true,
     });
 
-    const locustImage = new AssetImage('app');
+    // don't create the cluster before ECS service linked role is created
+    cluster.node.defaultChild!.node.addDependency(slr);
 
     const master = new LocustMasterService(this, 'Master', {
-      image: locustImage,
       cluster,
       certificateArn: props.certificateArn,
       allowedCidrs: props.allowedCidrs,
@@ -56,7 +62,6 @@ export class LoadTestStack extends Stack {
     });
 
     const worker = new LocustWorkerService(this, 'Worker', {
-      image: locustImage,
       cluster,
       locustMasterHostName: master.configMapHostname,
     });

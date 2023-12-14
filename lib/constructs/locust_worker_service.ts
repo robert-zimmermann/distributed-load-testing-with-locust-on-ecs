@@ -3,7 +3,6 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 export interface LocustWorkerServiceProps {
-  readonly image: ecs.ContainerImage;
   readonly cluster: ecs.ICluster;
   readonly locustMasterHostName: string;
 }
@@ -14,11 +13,14 @@ export class LocustWorkerService extends Construct {
   constructor(scope: Construct, id: string, props: LocustWorkerServiceProps) {
     super(scope, id);
 
-    const { cluster, image } = props;
+    const { cluster } = props;
+
+    const image = new ecs.AssetImage('app');
 
     const workerTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDefinition', {
-      cpu: 4096,
-      memoryLimitMiB: 8192,
+      // a locust worker can use only 1 core: https://github.com/locustio/locust/issues/1493
+      cpu: 1024,
+      memoryLimitMiB: 2048,
     });
 
     workerTaskDefinition
@@ -53,6 +55,7 @@ export class LocustWorkerService extends Construct {
           weight: 0,
         },
       ],
+      minHealthyPercent: 0,
     });
 
     this.service = service;

@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 locustio/locust:2.8.3
+FROM --platform=linux/amd64 locustio/locust:2.20.1
 COPY . ./
 
 # for standalone

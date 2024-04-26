@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 locustio/locust:2.20.1
+FROM --platform=linux/amd64 locustio/locust:2.26.0
 RUN pip3 install oauthlib
 RUN pip3 install requests_oauthlib
 COPY . ./

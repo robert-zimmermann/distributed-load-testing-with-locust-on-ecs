@@ -17,12 +17,16 @@ new LoadTestStack(app, 'LoadTestStack', {
 
   // CIDRs that can access Locust Web UI ALB.
   // It is highly recommended to set this CIDR as narrowly as possible
-  // since Locust Web UI does NOT have any authentication mechanism
-  // allow traffic from the world.
-  // if only permitting a single IP use '/32'
+  // when you do not enable the authentication option below.
   allowedCidrs: ['0.0.0.0/0'],
 
-  // You can enable basic auth for Locust web UI uncommenting lines below:
-  // webUsername: 'admin',
-  // webPassword: 'passw0rd',
+  // You can enable password auth for Locust web UI uncommenting lines below:
+  webUsername: 'relocator',
+  webPassword: 'RELOCAWS-398',
+
+  // Any arbitrary command line options to pass to Locust.
+  // An example would be:
+  // Exclude Tags - List of tags to exclude from the test, so only tasks
+  // with no matching tags will be executed.
+  // additionalArguments: ['--exclude-tags', 'tag1', 'tag2'],
 });

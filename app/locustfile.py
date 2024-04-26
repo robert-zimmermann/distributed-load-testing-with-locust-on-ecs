@@ -3,6 +3,8 @@ import os
 from locust import FastHttpUser, task, constant_pacing, run_single_user
 import relocwsfunc
 import relocredirectfunc
+# enable password authentication
+import auth
 
 # ==============================================================================
 # Relocator combined simulations for (redirect-endpoint and whitelabel-endpoint)

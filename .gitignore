@@ -10,3 +10,5 @@ cdk.out
 # idea / intelliJ
 .idea
 *.iml
+
+*/oauth_secret.json
